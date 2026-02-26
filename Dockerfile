@@ -52,8 +52,8 @@ COPY --from=vendor /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
 
-RUN chmod +x ./docker/start.sh \
-    && php artisan package:discover --ansi \
+RUN rm -f bootstrap/cache/*.php \
+    && chmod +x ./docker/start.sh \
     && mkdir -p /data \
     && touch /data/database.sqlite \
     && chown -R www-data:www-data /var/www/html /data
