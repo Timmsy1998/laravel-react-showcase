@@ -27,6 +27,7 @@ RUN apk add --no-cache \
     bash \
     icu-data-full \
     icu-libs \
+    libpq \
     libzip \
     sqlite-libs \
     oniguruma \
@@ -35,6 +36,7 @@ RUN apk add --no-cache \
     $PHPIZE_DEPS \
     icu-dev \
     libzip-dev \
+    postgresql-dev \
     sqlite-dev \
     && docker-php-ext-install -j"$(nproc)" \
     bcmath \
