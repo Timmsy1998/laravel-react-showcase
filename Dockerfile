@@ -20,6 +20,8 @@ RUN npm run build
 
 FROM php:8.3-cli-alpine
 WORKDIR /var/www/html
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
 RUN apk add --no-cache \
     bash \
