@@ -15,11 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            ['username' => 'testuser', 'password' => 'password']
+        );
 
-        User::factory()->create([
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-        ]);
+        if (\App\Models\RealmGuild::query()->count() === 0) {
+            $this->call(RealmShowcaseSeeder::class);
+        }
     }
 }
