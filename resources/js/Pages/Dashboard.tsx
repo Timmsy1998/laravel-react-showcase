@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useMemo, useState } from 'react';
 
 type DashboardProps = PageProps<{
     stats: { label: string; value: string; delta: string }[];
@@ -21,6 +22,34 @@ export default function Dashboard() {
             updatedAt,
         },
     } = usePage<DashboardProps>();
+    const [now, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        const poll = window.setInterval(() => {
+            router.reload({
+                only: ['stats', 'activity', 'topGuilds', 'progress', 'updatedAt'],
+            });
+        }, 30000);
+
+        return () => window.clearInterval(poll);
+    }, []);
+
+    useEffect(() => {
+        const ticker = window.setInterval(() => setNow(Date.now()), 1000);
+        return () => window.clearInterval(ticker);
+    }, []);
+
+    const updatedAgo = useMemo(() => {
+        const updatedAtMs = new Date(updatedAt).getTime();
+        const elapsedSeconds = Math.max(0, Math.floor((now - updatedAtMs) / 1000));
+
+        if (elapsedSeconds < 60) {
+            return `${elapsedSeconds}s ago`;
+        }
+
+        const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+        return `${elapsedMinutes}m ago`;
+    }, [now, updatedAt]);
 
     return (
         <AuthenticatedLayout
@@ -111,7 +140,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold text-white">Top Guilds (30d)</h2>
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                            Refreshed from backend
+                            Auto-refreshing
                         </p>
                     </div>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -132,7 +161,7 @@ export default function Dashboard() {
                         ))}
                     </div>
                     <p className="mt-4 text-xs text-slate-500">
-                        Updated {new Date(updatedAt).toLocaleString()}
+                        Last backend tick: {new Date(updatedAt).toLocaleTimeString()} ({updatedAgo})
                     </p>
                 </section>
             </div>
