@@ -6,6 +6,7 @@ use App\Models\RealmEvent;
 use App\Models\RealmEventResult;
 use App\Models\RealmGuild;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class RealmShowcaseSeeder extends Seeder
 {
@@ -27,5 +28,7 @@ class RealmShowcaseSeeder extends Seeder
                 ]);
             }
         }
+
+        Cache::forget('dashboard:realm:payload:v1');
     }
 }

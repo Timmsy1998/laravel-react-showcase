@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,5 +24,7 @@ class DatabaseSeeder extends Seeder
         if (\App\Models\RealmGuild::query()->count() === 0) {
             $this->call(RealmShowcaseSeeder::class);
         }
+
+        Cache::forget('dashboard:realm:payload:v1');
     }
 }
