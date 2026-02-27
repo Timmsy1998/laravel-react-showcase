@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,17 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        $submittedUsername = $this->string('username')->toString();
+        $normalizedUsername = Str::lower($submittedUsername);
+
+        $storedUsername = User::query()
+            ->whereRaw('LOWER(username) = ?', [$normalizedUsername])
+            ->value('username') ?? $submittedUsername;
+
+        if (! Auth::attempt([
+            'username' => $storedUsername,
+            'password' => $this->string('password')->toString(),
+        ], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

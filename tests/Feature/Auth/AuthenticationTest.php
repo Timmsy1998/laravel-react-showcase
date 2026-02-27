@@ -42,6 +42,21 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_users_can_authenticate_with_case_insensitive_username(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'Timmsy',
+        ]);
+
+        $response = $this->post('/login', [
+            'username' => 'timmsy',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();
