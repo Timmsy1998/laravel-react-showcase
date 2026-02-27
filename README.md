@@ -18,9 +18,11 @@ It demonstrates a modern Laravel backend with an Inertia React frontend, themed 
   - Realm guilds, events, and event results domain models
   - Cached aggregate dashboard payload from Laravel service layer
   - Dashboard widgets rendered from backend data
+  - Live mock simulation via scheduled `realm:tick` updates
+  - Dashboard auto-refreshes to surface backend state changes
 - Deployment + CI
   - Fly.io deploy config with persistent SQLite volume (`/data/database.sqlite`)
-  - Startup script runs migrations and optional seeding
+  - Startup script runs migrations, optional seeding, and optional scheduler worker
   - GitHub Actions pipeline gates deploy on passing tests
 
 ## Tech Stack
@@ -81,6 +83,24 @@ If seeded data does not appear immediately, clear cache:
 php artisan cache:clear
 ```
 
+## Live Mock Activity
+
+To make mocked data behave more like live production telemetry:
+
+- `realm:tick` command simulates event/guild/result changes
+- Laravel scheduler runs `realm:tick` every minute
+- Dashboard polls backend data every 30 seconds and updates widgets
+
+Run a manual tick locally:
+```bash
+php artisan realm:tick
+```
+
+Run scheduler locally (optional if not using `schedule:work`):
+```bash
+php artisan schedule:work
+```
+
 ## Tests and Build
 
 Run tests:
@@ -134,11 +154,17 @@ On Fly startup (`docker/start.sh`):
 2. Runs `php artisan migrate --force`
 3. Runs `php artisan db:seed --force` by default
 4. Caches config/routes/views
-5. Starts app server
+5. Starts `php artisan schedule:work` in background by default
+6. Starts app server
 
 Disable startup seeding if needed:
 ```bash
 fly secrets set SEED_ON_DEPLOY=false --app gaming-realm
+```
+
+Disable scheduler worker if needed:
+```bash
+fly secrets set ENABLE_SCHEDULER=false --app gaming-realm
 ```
 
 ## License
