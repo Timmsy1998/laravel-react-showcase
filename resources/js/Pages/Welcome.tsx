@@ -2,20 +2,21 @@ import { Head, Link } from '@inertiajs/react';
 
 const features = [
     {
-        title: 'Quest Boards',
-        description: 'Spin up events, tournaments, and challenge ladders in minutes.',
+        title: 'Event Ops',
+        description: 'Launch tournaments, ladders, and weekly match cycles from one place.',
     },
     {
-        title: 'Guild Profiles',
-        description: 'Give each team a home base with stats, rosters, and activity feeds.',
+        title: 'Team Hubs',
+        description: 'Manage rosters, member roles, and progression history for every guild.',
     },
     {
-        title: 'Loot Drops',
-        description: 'Reward participation with unlockables, badges, and progression tracks.',
+        title: 'Progression Rewards',
+        description: 'Drive retention with rank tracks, unlockables, and achievement milestones.',
     },
 ];
 
 type WelcomeProps = {
+    isAuthenticated: boolean;
     canLogin: boolean;
     canRegister: boolean;
     laravelVersion: string;
@@ -23,6 +24,7 @@ type WelcomeProps = {
 };
 
 export default function Welcome({
+    isAuthenticated,
     canLogin,
     canRegister,
     laravelVersion,
@@ -41,21 +43,32 @@ export default function Welcome({
                             Gaming Realm
                         </p>
                         <nav className="flex items-center gap-3">
-                            {canLogin && (
+                            {isAuthenticated ? (
                                 <Link
-                                    href={route('login')}
-                                    className="rounded-lg border border-cyan-300/40 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-200"
-                                >
-                                    Log in
-                                </Link>
-                            )}
-                            {canRegister && (
-                                <Link
-                                    href={route('register')}
+                                    href={route('dashboard')}
                                     className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-orange-950 transition hover:bg-orange-400"
                                 >
-                                    Join now
+                                    Dashboard
                                 </Link>
+                            ) : (
+                                <>
+                                    {canLogin && (
+                                        <Link
+                                            href={route('login')}
+                                            className="rounded-lg border border-cyan-300/40 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-200"
+                                        >
+                                            Log in
+                                        </Link>
+                                    )}
+                                    {canRegister && (
+                                        <Link
+                                            href={route('register')}
+                                            className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-orange-950 transition hover:bg-orange-400"
+                                        >
+                                            Join now
+                                        </Link>
+                                    )}
+                                </>
                             )}
                         </nav>
                     </header>
@@ -63,22 +76,22 @@ export default function Welcome({
                     <main className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr]">
                         <section>
                             <p className="mb-3 inline-flex rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-cyan-200">
-                                Laravel + React + Tailwind
+                                Realm Management Platform
                             </p>
                             <h1 className="text-4xl font-black leading-tight text-white sm:text-6xl">
-                                Build your next
+                                Run your next
                                 <span className="block bg-gradient-to-r from-cyan-300 to-orange-300 bg-clip-text text-transparent">
-                                    gaming platform
+                                    competitive gaming realm
                                 </span>
                             </h1>
                             <p className="mt-5 max-w-xl text-base text-slate-300 sm:text-lg">
-                                A starter stack tuned for clans, communities, and multiplayer
-                                products. Fast auth, modern UI, and room to scale.
+                                Coordinate events, teams, and progression from a single command
+                                center built for modern online communities.
                             </p>
                         </section>
 
                         <section className="rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-cyan-500/10 backdrop-blur">
-                            <h2 className="text-xl font-bold text-white">Starter Loadout</h2>
+                            <h2 className="text-xl font-bold text-white">Core Modules</h2>
                             <ul className="mt-4 space-y-4">
                                 {features.map((feature) => (
                                     <li

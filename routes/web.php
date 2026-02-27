@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
+        'isAuthenticated' => auth()->check(),
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
