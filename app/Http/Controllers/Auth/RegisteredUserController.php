@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,11 +37,18 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
+        $attributes = [
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+        ];
+
+        // Backward compatibility for databases that still have a required `name` column.
+        if (Schema::hasColumn('users', 'name')) {
+            $attributes['name'] = $request->username;
+        }
+
+        $user = User::create($attributes);
 
         event(new Registered($user));
 
