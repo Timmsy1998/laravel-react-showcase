@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 
 const features = [
     {
@@ -16,7 +16,6 @@ const features = [
 ];
 
 type WelcomeProps = {
-    isAuthenticated: boolean;
     canLogin: boolean;
     canRegister: boolean;
     laravelVersion: string;
@@ -24,12 +23,14 @@ type WelcomeProps = {
 };
 
 export default function Welcome({
-    isAuthenticated,
     canLogin,
     canRegister,
     laravelVersion,
     phpVersion,
 }: WelcomeProps) {
+    const page = usePage();
+    const isAuthenticated = Boolean((page.props as { auth?: { user?: unknown } }).auth?.user);
+
     return (
         <>
             <Head title="Gaming Realm" />
