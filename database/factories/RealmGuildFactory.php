@@ -15,11 +15,11 @@ class RealmGuildFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->company().' Guild',
-            'tag' => strtoupper(fake()->unique()->lexify('???')),
-            'region' => fake()->randomElement(['NA', 'EU', 'APAC', 'LATAM']),
-            'active_members' => fake()->numberBetween(8, 60),
-            'ranking_score' => fake()->numberBetween(900, 2400),
+            'name' => $this->faker->unique()->company().' Guild',
+            'tag' => strtoupper($this->faker->unique()->lexify('???')),
+            'region' => $this->faker->randomElement(['NA', 'EU', 'APAC', 'LATAM']),
+            'active_members' => $this->faker->numberBetween(8, 60),
+            'ranking_score' => $this->faker->numberBetween(900, 2400),
         ];
     }
 }

@@ -14,26 +14,26 @@ class RealmEventFactory extends Factory
 
     public function definition(): array
     {
-        $status = fake()->randomElement(['queued', 'scheduled', 'live', 'completed']);
-        $startsAt = fake()->dateTimeBetween('-7 days', '+7 days');
+        $status = $this->faker->randomElement(['queued', 'scheduled', 'live', 'completed']);
+        $startsAt = $this->faker->dateTimeBetween('-7 days', '+7 days');
         $endsAt = $status === 'completed'
-            ? fake()->dateTimeBetween($startsAt, '+10 days')
+            ? $this->faker->dateTimeBetween($startsAt, '+10 days')
             : null;
 
         return [
-            'title' => fake()->randomElement([
+            'title' => $this->faker->randomElement([
                 'Arena Clash',
                 'Guild Skirmish',
                 'Raid Rotation',
                 'Control Point Cup',
                 'Nightfall Trials',
-            ]).' #'.fake()->numberBetween(10, 999),
+            ]).' #'.$this->faker->numberBetween(10, 999),
             'status' => $status,
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
-            'current_players' => fake()->numberBetween(0, 220),
-            'max_players' => fake()->randomElement([64, 100, 128, 256]),
-            'reward_xp' => fake()->numberBetween(1000, 15000),
+            'current_players' => $this->faker->numberBetween(0, 220),
+            'max_players' => $this->faker->randomElement([64, 100, 128, 256]),
+            'reward_xp' => $this->faker->numberBetween(1000, 15000),
         ];
     }
 }

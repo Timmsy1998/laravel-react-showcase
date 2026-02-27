@@ -19,9 +19,9 @@ class RealmEventResultFactory extends Factory
         return [
             'realm_event_id' => RealmEvent::factory(),
             'realm_guild_id' => RealmGuild::factory(),
-            'score' => fake()->numberBetween(120, 1200),
-            'wins' => fake()->numberBetween(0, 20),
-            'kills' => fake()->numberBetween(5, 140),
+            'score' => $this->faker->numberBetween(120, 1200),
+            'wins' => $this->faker->numberBetween(0, 20),
+            'kills' => $this->faker->numberBetween(5, 140),
         ];
     }
 }
