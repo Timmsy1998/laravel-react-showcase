@@ -7,6 +7,11 @@ if [ "${DB_CONNECTION:-}" = "sqlite" ]; then
 fi
 
 php artisan migrate --force
+
+if [ "${SEED_ON_DEPLOY:-true}" = "true" ]; then
+  php artisan db:seed --force
+fi
+
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
