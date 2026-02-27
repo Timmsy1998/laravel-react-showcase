@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "tsc && vite build",
-        "dev": "vite"
+        "dev": "composer dev",
+        "dev:vite": "vite"
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",
