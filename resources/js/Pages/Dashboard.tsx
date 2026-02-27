@@ -2,25 +2,25 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 
-const stats = [
-    { label: 'Active Guilds', value: '24', delta: '+12%' },
-    { label: 'Open Quests', value: '87', delta: '+5%' },
-    { label: 'Live Tournaments', value: '6', delta: '+2' },
-    { label: 'XP Awarded Today', value: '18.4k', delta: '+9%' },
-];
-
-const activity = [
-    { name: 'Friday Night Arena', state: 'Live', players: 134 },
-    { name: 'Guild Sprint Challenge', state: 'Queueing', players: 58 },
-    { name: 'Raid Boss Rotation', state: 'Starts in 40m', players: 212 },
-];
+type DashboardProps = PageProps<{
+    stats: { label: string; value: string; delta: string }[];
+    activity: { name: string; state: string; players: number; guilds: number }[];
+    topGuilds: { name: string; tag: string; region: string; score: number }[];
+    progress: { label: string; value: number }[];
+    updatedAt: string;
+}>;
 
 export default function Dashboard() {
     const {
         props: {
             auth: { user },
+            stats,
+            activity,
+            topGuilds,
+            progress,
+            updatedAt,
         },
-    } = usePage<PageProps>();
+    } = usePage<DashboardProps>();
 
     return (
         <AuthenticatedLayout
@@ -74,7 +74,9 @@ export default function Dashboard() {
                                 >
                                     <div>
                                         <p className="font-semibold text-slate-100">{item.name}</p>
-                                        <p className="text-xs text-slate-400">{item.players} players</p>
+                                        <p className="text-xs text-slate-400">
+                                            {item.players} players, {item.guilds} guilds
+                                        </p>
                                     </div>
                                     <p className="text-xs font-semibold uppercase tracking-wider text-cyan-200">
                                         {item.state}
@@ -87,35 +89,51 @@ export default function Dashboard() {
                     <article className="rounded-2xl border border-white/10 bg-slate-900/75 p-6 shadow-2xl shadow-orange-500/10 backdrop-blur">
                         <h2 className="text-lg font-bold text-white">Progress Pulse</h2>
                         <div className="mt-4 space-y-4">
-                            <div>
-                                <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-300">
-                                    <span>Season Battle Pass</span>
-                                    <span>72%</span>
+                            {progress.map((item) => (
+                                <div key={item.label}>
+                                    <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-300">
+                                        <span>{item.label}</span>
+                                        <span>{item.value}%</span>
+                                    </div>
+                                    <div className="h-2 rounded-full bg-slate-800">
+                                        <div
+                                            className="h-2 rounded-full bg-gradient-to-r from-cyan-400 to-orange-400"
+                                            style={{ width: `${item.value}%` }}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="h-2 rounded-full bg-slate-800">
-                                    <div className="h-2 w-[72%] rounded-full bg-gradient-to-r from-cyan-400 to-orange-400" />
-                                </div>
-                            </div>
-                            <div>
-                                <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-300">
-                                    <span>Guild Recruitment Goal</span>
-                                    <span>48%</span>
-                                </div>
-                                <div className="h-2 rounded-full bg-slate-800">
-                                    <div className="h-2 w-[48%] rounded-full bg-gradient-to-r from-cyan-400 to-orange-400" />
-                                </div>
-                            </div>
-                            <div>
-                                <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-300">
-                                    <span>Event Completion Rate</span>
-                                    <span>89%</span>
-                                </div>
-                                <div className="h-2 rounded-full bg-slate-800">
-                                    <div className="h-2 w-[89%] rounded-full bg-gradient-to-r from-cyan-400 to-orange-400" />
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </article>
+                </section>
+
+                <section className="rounded-2xl border border-white/10 bg-slate-900/75 p-6 shadow-2xl shadow-cyan-500/10 backdrop-blur">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-bold text-white">Top Guilds (30d)</h2>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                            Refreshed from backend
+                        </p>
+                    </div>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                        {topGuilds.map((guild) => (
+                            <div
+                                key={guild.tag}
+                                className="rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3"
+                            >
+                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
+                                    [{guild.tag}]
+                                </p>
+                                <p className="mt-2 font-bold text-white">{guild.name}</p>
+                                <p className="mt-1 text-xs text-slate-400">{guild.region}</p>
+                                <p className="mt-3 text-sm font-semibold text-orange-300">
+                                    {guild.score.toLocaleString()} pts
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="mt-4 text-xs text-slate-500">
+                        Updated {new Date(updatedAt).toLocaleString()}
+                    </p>
                 </section>
             </div>
         </AuthenticatedLayout>
