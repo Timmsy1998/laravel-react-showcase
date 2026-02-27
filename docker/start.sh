@@ -6,6 +6,7 @@ if [ "${DB_CONNECTION:-}" = "sqlite" ]; then
   touch "${DB_DATABASE:-/data/database.sqlite}"
 fi
 
+php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
