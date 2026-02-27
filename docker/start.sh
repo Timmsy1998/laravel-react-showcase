@@ -16,4 +16,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+if [ "${ENABLE_SCHEDULER:-true}" = "true" ]; then
+  php artisan schedule:work >/tmp/scheduler.log 2>&1 &
+fi
+
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
