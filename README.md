@@ -1,29 +1,39 @@
 # Gaming Realm
 
-Gaming Realm is a showcase project I built to demonstrate a modern Laravel + React stack for community-driven gaming products.
+Gaming Realm is a Laravel + React showcase app for competitive community platforms.
 
-It focuses on a clean full-stack baseline with authentication, profile management, and a styled landing experience that can be extended into tournaments, guild tools, and progression systems.
+It demonstrates a modern Laravel backend with an Inertia React frontend, themed authenticated UI, backend-driven dashboard metrics, and Fly.io deployment with SQLite persistence.
 
-## What this project shows
+## Current Features
 
-- Laravel 12 backend with Inertia-powered React frontend
-- Authentication flow: register, login, password reset, email verification
-- Protected dashboard and authenticated profile management
-- Profile update, password change, and account deletion flows
-- Tailwind-based UI with a custom gaming-themed landing page
-- Production-ready container and Fly.io deployment config
+- Username-based authentication
+  - Register with `username`
+  - Login is case-insensitive on username
+- Full auth flows
+  - Login, register, password reset, email verification
+- Authenticated experience
+  - Themed dashboard and profile pages
+  - Profile update, password change, account deletion
+- Backend showcase domain + metrics
+  - Realm guilds, events, and event results domain models
+  - Cached aggregate dashboard payload from Laravel service layer
+  - Dashboard widgets rendered from backend data
+- Deployment + CI
+  - Fly.io deploy config with persistent SQLite volume (`/data/database.sqlite`)
+  - Startup script runs migrations and optional seeding
+  - GitHub Actions pipeline gates deploy on passing tests
 
-## Tech stack
+## Tech Stack
 
 - PHP 8.2+
 - Laravel 12
 - React 18 + TypeScript
 - Inertia.js
 - Tailwind CSS
-- Vite
-- SQLite by default (easy to swap to Postgres/MySQL)
+- Vite 7
+- SQLite (default)
 
-## Local development
+## Local Setup
 
 1. Install dependencies:
 ```bash
@@ -31,71 +41,105 @@ composer install
 npm install
 ```
 
-2. Set up environment:
+2. Environment + key:
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-3. Run migrations:
+3. Migrate + seed:
 ```bash
 php artisan migrate
+php artisan db:seed
 ```
 
-4. Start the app:
+4. Start development:
 ```bash
-composer run dev
+npm run dev
 ```
 
-## Build and test
+Notes:
+- `npm run dev` and `composer dev` both start the full local stack.
+- `composer dev` runs Laravel server, queue worker, logs, and Vite concurrently.
 
-Build frontend assets:
+## Seeded Showcase Data
+
+This project includes mock showcase data for backend-powered dashboard widgets.
+
+Seed commands:
 ```bash
-npm run build
+php artisan db:seed
 ```
+
+Reset + reseed:
+```bash
+php artisan migrate:fresh --seed
+```
+
+If seeded data does not appear immediately, clear cache:
+```bash
+php artisan cache:clear
+```
+
+## Tests and Build
 
 Run tests:
 ```bash
 php artisan test
 ```
 
-## Deployment (Fly.io)
+Build frontend assets:
+```bash
+npm run build
+```
 
-This repo includes `Dockerfile`, `.dockerignore`, and `fly.toml`.
+## CI/CD (GitHub Actions + Fly)
 
-1. Authenticate and create app:
+Workflow:
+- `.github/workflows/test-and-deploy.yml`
+- Runs on `main` and `master`
+- Executes tests first
+- Deploys to Fly only if tests pass
+
+Required GitHub secret:
+- `FLY_API_TOKEN`
+
+## Fly.io Deployment
+
+`fly.toml` is configured for:
+- app: `gaming-realm`
+- region: `iad`
+- SQLite path: `/data/database.sqlite`
+- volume mount: `data -> /data`
+
+### One-time setup
+
 ```bash
 fly auth login
 fly apps create gaming-realm
+fly volumes create data -r iad -n 1 --app gaming-realm
+fly secrets set APP_KEY="$(php artisan key:generate --show)" --app gaming-realm
 ```
 
-2. Create persistent volume (for SQLite):
+### Deploy
+
 ```bash
-fly volumes create data --region ord --size 1
+fly deploy --app gaming-realm
 ```
 
-3. Set app key:
+### Runtime behavior
+
+On Fly startup (`docker/start.sh`):
+1. Ensures SQLite file path exists
+2. Runs `php artisan migrate --force`
+3. Runs `php artisan db:seed --force` by default
+4. Caches config/routes/views
+5. Starts app server
+
+Disable startup seeding if needed:
 ```bash
-fly secrets set APP_KEY="$(php artisan key:generate --show)"
+fly secrets set SEED_ON_DEPLOY=false --app gaming-realm
 ```
-
-4. Deploy:
-```bash
-fly deploy
-```
-
-Notes:
-
-- Deploy runs migrations with `php artisan migrate --force` via Fly release command.
-- Default database path on Fly is `/data/database.sqlite`.
-- For Postgres/MySQL, set `DB_*` secrets and update Fly env values accordingly.
-
-## Roadmap ideas
-
-- Guild and team management
-- Event and tournament scheduling
-- Reward/loot progression
-- Real-time notifications and activity feeds
 
 ## License
 
